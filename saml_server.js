@@ -187,7 +187,7 @@ Accounts.registerLoginHandler(function(loginRequest) {
         }
 
         var attributeNames = Meteor.settings.saml[0].attributesSAML;
-        var meteorProfile = {};
+        var meteorProfile = user.profile || {};
         if (attributeNames) {
           attributeNames.forEach(function(attribute) {
             meteorProfile[attribute] = loginResult.profile[attribute];
