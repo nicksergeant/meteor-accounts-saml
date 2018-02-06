@@ -77,9 +77,9 @@ and if SingleLogout is needed
 ## Setup SAML SP (Consumer)
 
 1. Create a Meteor project by `meteor create sp` and cd into it.
-2. Add `steffo:meteor-accounts-saml`
+2. Add `nicksergeant:meteor-accounts-saml`
 3. Create `server/lib/settings.js` as described above. Since Meteor loads things in `server/lib` first, this ensures that your settings are respected even on Galaxy where you cannot use `meteor --settings`.
-4. Put your private key and your cert (not the IDP's one) into the "private" directory. Eg if your meteor project is at `/Users/steffo/sp` then place them in `/Users/steffo/sp/private`
+4. Put your private key and your cert (not the IDP's one) into the "private" directory. Eg if your meteor project is at `/Users/nicksergeant/sp` then place them in `/Users/nicksergeant/sp/private`
 5. Check if you can receive SP metadata eg via `curl http://localhost:3000/_saml/metadata/openam`. Output should look like:
 
 ```

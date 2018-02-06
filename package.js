@@ -1,8 +1,8 @@
 Package.describe({
-    name:"steffo:meteor-accounts-saml",
+    name:"nicksergeant:meteor-accounts-saml",
     summary: "SAML Login (SP) for Meteor. Works with OpenAM, OpenIDP and provides Single Logout.",
-    version: "0.0.13",
-    git: "https://github.com/steffow/meteor-accounts-saml.git"
+    version: "0.0.14",
+    git: "https://github.com/nicksergeant/meteor-accounts-saml.git"
 });
 
 Package.on_use(function (api) {
@@ -16,7 +16,7 @@ Package.on_use(function (api) {
 
 Package.onTest((api) => {
   // Sets up a dependency on this package.
-  api.use('steffo:meteor-accounts-saml');
+  api.use('nicksergeant:meteor-accounts-saml');
   // Use the Mocha test framework.
   api.use('practicalmeteor:mocha@2.4.5_2');
 });

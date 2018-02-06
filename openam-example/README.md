@@ -1,4 +1,4 @@
-#Examples for _steffo:meteor-accounts-saml_
+#Examples for _nicksergeant:meteor-accounts-saml_
 
 There are currently two SAML IDPs supported by the examples.
 
@@ -21,7 +21,7 @@ After that, run
 $ cp -rp meteor-accounts-saml/openam-example/* .
 $ meteor add accounts-password
 $ meteor add accounts-ui
-$ meteor add steffo:meteor-accounts-saml
+$ meteor add nicksergeant:meteor-accounts-saml
 ```
 
 Make sure that you add/change the user in `server/config.js` and that `initialBoot = true`in the same file. This will create a local Meteor user. 
