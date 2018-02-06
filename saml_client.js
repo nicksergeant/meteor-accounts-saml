@@ -93,7 +93,6 @@ Meteor.loginWithSaml = function (options, callback) {
 Meteor.logoutWithSaml = function (options, callback) {
     //Accounts.saml.idpInitiatedSLO(options, callback); 
     Meteor.call("samlLogout", options.provider, function (err, result) {
-        console.log("LOC " + result);
                 // A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
         //window.location.replace(Meteor.absoluteUrl("_saml/sloRedirect/" + options.provider + "/?redirect="+result));
         window.location.replace(Meteor.absoluteUrl("_saml/sloRedirect/" + options.provider + "/?redirect="+encodeURIComponent(result)));

@@ -18,9 +18,6 @@ Meteor.methods({
         }
         providerConfig = Meteor.settings.saml.filter(samlProvider)[0];
 
-        if (Meteor.settings.debug) {
-            console.log("Logout request from " + JSON.stringify(providerConfig));
-        }
         // This query should respect upcoming array of SAML logins
         var user = Meteor.users.findOne({
             _id: Meteor.userId(),
@@ -30,9 +27,6 @@ Meteor.methods({
         });
         var nameID = user.services.saml.nameID;
         var sessionIndex = nameID = user.services.saml.idpSession;
-        if (Meteor.settings.debug) {
-            console.log("NameID for user " + Meteor.userId() + " found: " + JSON.stringify(nameID));
-        }
 
         _saml = new SAML(providerConfig);
 
@@ -54,11 +48,6 @@ Meteor.methods({
 
         var _syncRequestToUrl = Meteor.wrapAsync(_saml.requestToUrl, _saml);
         var result = _syncRequestToUrl(request.request, "logout");
-        if (Meteor.settings.debug) {
-            console.log("SAML Logout Request " + result);
-        }
-
-
         return result;
     }
 })
@@ -68,12 +57,8 @@ Accounts.registerLoginHandler(function(loginRequest) {
         return undefined;
     }
     var loginResult = Accounts.saml.retrieveCredential(loginRequest.credentialToken);
-    if (Meteor.settings.debug) {
-        console.log("RESULT :" + JSON.stringify(loginResult));
-    }
 
     if (loginResult && loginResult.profile && loginResult.profile.nameID) {
-        console.log("Profile: " + JSON.stringify(loginResult.profile.nameID));
         var localProfileMatchAttribute;
         var localFindStructure;
         var nameIDFormat;
@@ -107,9 +92,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
 
         if (!user) {
             if (Meteor.settings.saml[0].dynamicProfile) {
-                if (Meteor.settings.debug) {
-                    console.log("User not found. Will dynamically create one with '" + Meteor.settings.saml[0].localProfileMatchAttribute + "' = " + loginResult.profile[Meteor.settings.saml[0].localProfileMatchAttribute])
-                }
                 Accounts.createUser({
                     //email: loginResult.profile.email,
                     password: "",
@@ -123,9 +105,6 @@ Accounts.registerLoginHandler(function(loginRequest) {
                 });
                 // update user profile w attrs from SAML Attr Satement
                 //Meteor.user.update(user, )
-                if (Meteor.settings.debug) {
-                    console.log("Profile for attributes: " + JSON.stringify(loginResult.profile));
-                }
                 var attributeNames = Meteor.settings.saml[0].attributesSAML;
                 var meteorProfile = {};
                 if (attributeNames) {
@@ -133,17 +112,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
                     meteorProfile[attribute] = loginResult.profile[attribute];
                   });
                 }
-                if (Meteor.settings.debug) {
-                    console.log("Profile for Meteor: " + JSON.stringify(meteorProfile));
-                }
                 Meteor.users.update(user, {
                     $set: {
                         'profile': meteorProfile
                     }
                 });
-                if (Meteor.settings.debug) {
-                    console.log("Created new user");
-                }
             } else {
                 throw new Error("Could not find an existing user with supplied attribute  '" + Meteor.settings.saml[0].localProfileMatchAttribute + "' and value:" + loginResult.profile[Meteor.settings.saml[0].localProfileMatchAttribute]);
             }
@@ -187,14 +160,11 @@ Accounts.registerLoginHandler(function(loginRequest) {
         }
 
         var attributeNames = Meteor.settings.saml[0].attributesSAML;
-        var meteorProfile = {};
+        var meteorProfile = user.profile || {};
         if (attributeNames) {
           attributeNames.forEach(function(attribute) {
             meteorProfile[attribute] = loginResult.profile[attribute];
           });
-        }
-        if (Meteor.settings.debug) {
-            console.log("Profile Update for Meteor: " + JSON.stringify(meteorProfile));
         }
         Meteor.users.update({
             _id: user._id
@@ -278,16 +248,10 @@ middleware = function(req, res, next) {
                 _saml.validateLogoutResponse(req.query.SAMLResponse, function(err, result) {
                     if (!err) {
                         var logOutUser = function(inResponseTo) {
-                            if (Meteor.settings.debug) {
-                                console.log("Logging Out user via inResponseTo " + inResponseTo);
-                            }
                             var loggedOutUser = Meteor.users.find({
                                 'services.saml.inResponseTo': inResponseTo
                             }).fetch();
                             if (loggedOutUser.length == 1) {
-                                if (Meteor.settings.debug) {
-                                    console.log("Found user " + loggedOutUser[0]._id);
-                                }
                                 Meteor.users.update({
                                     _id: loggedOutUser[0]._id
                                 }, {
@@ -344,9 +308,6 @@ middleware = function(req, res, next) {
                 break;
             case "validate":
                 _saml = new SAML(service);
-                if (Meteor.settings.debug) {
-                  console.log("Service: " + JSON.stringify(service));
-                };
                 Accounts.saml.RelayState = req.body.RelayState;
                 _saml.validateResponse(req.body.SAMLResponse, req.body.RelayState, function(err, profile, loggedOut) {
                     if (err)
@@ -387,9 +348,6 @@ var samlUrlToObject = function(url) {
         serviceName: splitPath[3],
         credentialToken: splitPath[4]
     };
-    if (Meteor.settings.debug) {
-        console.log(result);
-    }
     return result;
 };
 
